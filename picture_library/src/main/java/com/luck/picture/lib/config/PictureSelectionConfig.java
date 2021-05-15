@@ -21,7 +21,7 @@ import com.luck.picture.lib.style.PictureCropParameterStyle;
 import com.luck.picture.lib.style.PictureParameterStyle;
 import com.luck.picture.lib.style.PictureSelectorUIStyle;
 import com.luck.picture.lib.style.PictureWindowAnimationStyle;
-import com.yalantis.ucrop.UCrop;
+import com.yalantispictureselector.ucrop.UCrop;
 
 import java.util.ArrayList;
 import java.util.HashSet;

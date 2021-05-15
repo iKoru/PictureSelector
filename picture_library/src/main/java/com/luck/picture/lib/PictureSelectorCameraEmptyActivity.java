@@ -29,7 +29,7 @@ import com.luck.picture.lib.tools.PictureFileUtils;
 import com.luck.picture.lib.tools.SdkVersionUtils;
 import com.luck.picture.lib.tools.ToastUtils;
 import com.luck.picture.lib.tools.ValueOf;
-import com.yalantis.ucrop.UCrop;
+import com.yalantispictureselector.ucrop.UCrop;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -37,7 +37,7 @@ import com.luck.picture.lib.tools.ToastUtils;
 import com.luck.picture.lib.tools.ValueOf;
 import com.luck.picture.lib.tools.VoiceUtils;
 import com.luck.picture.lib.widget.PreviewViewPager;
-import com.yalantis.ucrop.UCrop;
+import com.yalantispictureselector.ucrop.UCrop;
 
 import org.jetbrains.annotations.NotNull;
 
