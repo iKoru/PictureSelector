@@ -296,7 +296,7 @@ public class PictureSelectorWeChatStyleActivity extends PictureSelectorActivity 
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.picture_right) {
+        if (id == R.id.picture_tv_ok) {
             if (folderWindow != null
                     && folderWindow.isShowing()) {
                 folderWindow.dismiss();

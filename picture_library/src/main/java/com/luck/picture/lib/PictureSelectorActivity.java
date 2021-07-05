@@ -86,11 +86,11 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
         OnAlbumItemClickListener, OnPhotoSelectChangedListener<LocalMedia>, OnItemClickListener,
         OnRecyclerViewPreloadMoreListener {
     private static final String TAG = PictureSelectorActivity.class.getSimpleName();
-    protected ImageView mIvPictureLeftBack;
+//    protected ImageView mIvPictureLeftBack;
     protected ImageView mIvArrow;
     protected View mTitleBar;
     protected View viewClickMask;
-    protected TextView mTvPictureTitle, mTvPictureRight, mTvPictureOk, mTvEmpty,
+    protected TextView mIvPictureLeftBack, mTvPictureTitle, mTvPictureRight, mTvPictureOk, mTvEmpty,
             mTvPictureImgNum, mTvPicturePreview, mTvPlayPause, mTvStop, mTvQuit,
             mTvMusicStatus, mTvMusicTotal, mTvMusicTime;
     protected RecyclerPreloadView mRecyclerView;
@@ -161,7 +161,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
         mTitleBar = findViewById(R.id.titleBar);
         mIvPictureLeftBack = findViewById(R.id.pictureLeftBack);
         mTvPictureTitle = findViewById(R.id.picture_title);
-        mTvPictureRight = findViewById(R.id.picture_right);
+        mTvPictureRight = findViewById(R.id.picture_tv_ok);
         mTvPictureOk = findViewById(R.id.picture_tv_ok);
         mCbOriginal = findViewById(R.id.cb_original);
         mIvArrow = findViewById(R.id.ivArrow);
@@ -339,7 +339,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 mTvPictureRight.setTextSize(PictureSelectionConfig.uiStyle.picture_top_titleRightTextSize);
             }
             if (PictureSelectionConfig.uiStyle.picture_top_leftBack != 0) {
-                mIvPictureLeftBack.setImageResource(PictureSelectionConfig.uiStyle.picture_top_leftBack);
+//                mIvPictureLeftBack.setImageResource(PictureSelectionConfig.uiStyle.picture_top_leftBack);
             }
             if (PictureSelectionConfig.uiStyle.picture_bottom_previewTextColor.length > 0) {
                 ColorStateList colorStateList = AttrsUtils.getColorStateList(PictureSelectionConfig.uiStyle.picture_bottom_previewTextColor);
@@ -448,7 +448,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             }
 
             if (PictureSelectionConfig.style.pictureLeftBackIcon != 0) {
-                mIvPictureLeftBack.setImageResource(PictureSelectionConfig.style.pictureLeftBackIcon);
+//                mIvPictureLeftBack.setImageResource(PictureSelectionConfig.style.pictureLeftBackIcon);
             }
             if (PictureSelectionConfig.style.pictureUnPreviewTextColor != 0) {
                 mTvPicturePreview.setTextColor(PictureSelectionConfig.style.pictureUnPreviewTextColor);
@@ -521,8 +521,8 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             if (containerBackgroundColor != 0) {
                 container.setBackgroundColor(containerBackgroundColor);
             }
-            Drawable leftDrawable = AttrsUtils.getTypeValueDrawable(getContext(), R.attr.picture_leftBack_icon, R.drawable.picture_icon_back);
-            mIvPictureLeftBack.setImageDrawable(leftDrawable);
+//            Drawable leftDrawable = AttrsUtils.getTypeValueDrawable(getContext(), R.attr.picture_leftBack_icon, R.drawable.picture_icon_back);
+//            mIvPictureLeftBack.setImageDrawable(leftDrawable);
 
             if (config.downResId != 0) {
                 Drawable drawable = ContextCompat.getDrawable(this, config.downResId);
@@ -952,8 +952,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.pictureLeftBack
-                || id == R.id.picture_right) {
+        if (id == R.id.pictureLeftBack) {
             if (folderWindow != null && folderWindow.isShowing()) {
                 folderWindow.dismiss();
             } else {

@@ -117,7 +117,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
         screenWidth = ScreenUtils.getScreenWidth(this);
         animation = AnimationUtils.loadAnimation(this, R.anim.picture_anim_modal_in);
         pictureLeftBack = findViewById(R.id.pictureLeftBack);
-        mTvPictureRight = findViewById(R.id.picture_right);
+        mTvPictureRight = findViewById(R.id.picture_tv_ok);
         mIvArrow = findViewById(R.id.ivArrow);
         viewPager = findViewById(R.id.preview_pager);
         mPicturePreview = findViewById(R.id.picture_id_preview);
