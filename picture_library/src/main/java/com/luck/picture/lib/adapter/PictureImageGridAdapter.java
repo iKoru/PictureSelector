@@ -405,6 +405,7 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
                     tvCamera.setBackgroundResource(R.drawable.ic_camera);
                 }
             } else {
+                tvCamera.setBackgroundResource(R.drawable.ic_camera);
 //                tvCamera.setText(config.chooseMode == PictureMimeType.ofAudio() ? context.getString(R.string.picture_tape)
 //                        : context.getString(R.string.picture_take_picture));
             }
