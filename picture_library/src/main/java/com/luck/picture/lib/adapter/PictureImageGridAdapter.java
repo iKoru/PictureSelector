@@ -607,7 +607,7 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
                         || media.getId() == image.getId()) {
                     selectData.remove(media);
                     subSelectPosition();
-                    AnimUtils.disZoom(contentHolder.ivPicture, config.zoomAnim);
+//                    AnimUtils.disZoom(contentHolder.ivPicture, config.zoomAnim);
                     break;
                 }
             }
@@ -643,8 +643,8 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
             selectData.add(image);
             image.setNum(selectData.size());
             VoiceUtils.getInstance().play();
-            AnimUtils.zoom(contentHolder.ivPicture, config.zoomAnim);
-            contentHolder.tvCheck.startAnimation(AnimationUtils.loadAnimation(context, R.anim.picture_anim_modal_in));
+//            AnimUtils.zoom(contentHolder.ivPicture, config.zoomAnim);
+//            contentHolder.tvCheck.startAnimation(AnimationUtils.loadAnimation(context, R.anim.picture_anim_modal_in));
         }
 
         boolean isRefreshAll = false;
@@ -741,13 +741,13 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
      */
     public void selectImage(ViewHolder holder, boolean isChecked) {
         holder.tvCheck.setSelected(isChecked);
-        if (isChecked) {
-            holder.ivPicture.setColorFilter(ContextCompat.getColor
-                    (context, R.color.picture_color_80), PorterDuff.Mode.SRC_ATOP);
-        } else {
-            holder.ivPicture.setColorFilter(ContextCompat.getColor
-                    (context, R.color.picture_color_20), PorterDuff.Mode.SRC_ATOP);
-        }
+//        if (isChecked) {
+//            holder.ivPicture.setColorFilter(ContextCompat.getColor
+//                    (context, R.color.picture_color_80), PorterDuff.Mode.SRC_ATOP);
+//        } else {
+//            holder.ivPicture.setColorFilter(ContextCompat.getColor
+//                    (context, R.color.picture_color_20), PorterDuff.Mode.SRC_ATOP);
+//        }
     }
 
     /**
