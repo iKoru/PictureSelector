@@ -439,7 +439,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .imageEngine(GlideEngine.createGlideEngine())// 外部传入图片加载引擎，必传项
                         //.theme(themeId)// 主题样式设置 具体参考 values/styles   用法：R.style.picture.white.style v2.3.3后 建议使用setPictureStyle()动态方式
                         .setPictureUIStyle(mSelectorUIStyle)
-                        //.setPictureStyle(mPictureParameterStyle)// 动态自定义相册主题
+                        .setPictureStyle(mPictureParameterStyle)// 动态自定义相册主题
                         //.setPictureCropStyle(mCropParameterStyle)// 动态自定义裁剪主题
                         .setPictureWindowAnimationStyle(mWindowAnimationStyle)// 自定义相册启动退出动画
                         .isWeChatStyle(isWeChatStyle)// 是否开启微信图片选择风格
@@ -980,7 +980,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 选择相册目录背景样式
         mPictureParameterStyle.pictureAlbumStyle = R.drawable.picture_new_item_select_bg;
         // 相册列表勾选图片样式
-        mPictureParameterStyle.pictureCheckedStyle = R.drawable.picture_checkbox_selector;
+        mPictureParameterStyle.pictureCheckedStyle = R.drawable.picture_checkbox_num_selector;
         // 相册列表底部背景色
         mPictureParameterStyle.pictureBottomBgColor = ContextCompat.getColor(getContext(), R.color.picture_color_grey);
         // 已选数量圆点背景样式
@@ -1070,7 +1070,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 选择相册目录背景样式
         mPictureParameterStyle.pictureAlbumStyle = R.drawable.picture_new_item_select_bg;
         // 相册列表勾选图片样式
-        mPictureParameterStyle.pictureCheckedStyle = R.drawable.picture_checkbox_selector;
+        mPictureParameterStyle.pictureCheckedStyle = R.drawable.picture_checkbox_num_selector;
         // 相册列表底部背景色
         mPictureParameterStyle.pictureBottomBgColor = ContextCompat.getColor(getContext(), R.color.picture_color_fa);
         // 已选数量圆点背景样式
@@ -1234,7 +1234,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 选择相册目录背景样式
         mPictureParameterStyle.pictureAlbumStyle = R.drawable.picture_new_item_select_bg;
         // 相册列表勾选图片样式
-        mPictureParameterStyle.pictureCheckedStyle = R.drawable.picture_checkbox_selector;
+        mPictureParameterStyle.pictureCheckedStyle = R.drawable.picture_checkbox_num_selector;
         // 相册列表底部背景色
         mPictureParameterStyle.pictureBottomBgColor = ContextCompat.getColor(getContext(), R.color.picture_color_fa);
         // 已选数量圆点背景样式
