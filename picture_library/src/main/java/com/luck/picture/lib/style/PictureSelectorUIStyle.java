@@ -387,7 +387,7 @@ public class PictureSelectorUIStyle {
         uiStyle.picture_adapter_item_camera_backgroundColor = R.color.picture_color_0b976a;
         uiStyle.picture_adapter_item_camera_textColor = Color.parseColor("#FFFFFF");
         uiStyle.picture_adapter_item_camera_textSize = 14;
-        uiStyle.picture_adapter_item_camera_textTopDrawable = R.drawable.picture_icon_camera;
+        uiStyle.picture_adapter_item_camera_textTopDrawable = R.drawable.ic_camera;
 
         uiStyle.picture_adapter_item_textSize = 12;
         uiStyle.picture_adapter_item_textColor = Color.parseColor("#FFFFFF");
@@ -459,7 +459,7 @@ public class PictureSelectorUIStyle {
         uiStyle.picture_adapter_item_camera_backgroundColor = R.color.picture_color_0b976a;
         uiStyle.picture_adapter_item_camera_textColor = Color.parseColor("#FFFFFF");
         uiStyle.picture_adapter_item_camera_textSize = 14;
-        uiStyle.picture_adapter_item_camera_textTopDrawable = R.drawable.picture_icon_camera;
+        uiStyle.picture_adapter_item_camera_textTopDrawable = R.drawable.ic_camera;
 
         uiStyle.picture_adapter_item_textSize = 12;
         uiStyle.picture_adapter_item_textColor = Color.parseColor("#FFFFFF");
@@ -536,7 +536,7 @@ public class PictureSelectorUIStyle {
         uiStyle.picture_adapter_item_camera_backgroundColor = R.color.picture_color_0b976a;
         uiStyle.picture_adapter_item_camera_textColor = Color.parseColor("#FFFFFF");
         uiStyle.picture_adapter_item_camera_textSize = 14;
-        uiStyle.picture_adapter_item_camera_textTopDrawable = R.drawable.picture_icon_camera;
+        uiStyle.picture_adapter_item_camera_textTopDrawable = R.drawable.ic_camera;
 
         uiStyle.picture_adapter_item_textSize = 12;
         uiStyle.picture_adapter_item_textColor = Color.parseColor("#FFFFFF");
@@ -611,7 +611,7 @@ public class PictureSelectorUIStyle {
         uiStyle.picture_adapter_item_camera_backgroundColor = R.color.picture_color_0b976a;
         uiStyle.picture_adapter_item_camera_textColor = Color.parseColor("#FFFFFF");
         uiStyle.picture_adapter_item_camera_textSize = 14;
-        uiStyle.picture_adapter_item_camera_textTopDrawable = R.drawable.picture_icon_camera;
+        uiStyle.picture_adapter_item_camera_textTopDrawable = R.drawable.ic_camera;
 
         uiStyle.picture_adapter_item_textSize = 12;
         uiStyle.picture_adapter_item_textColor = Color.parseColor("#FFFFFF");
