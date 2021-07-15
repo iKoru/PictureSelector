@@ -399,10 +399,11 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
 //                    tvCamera.setText(config.chooseMode == PictureMimeType.ofAudio() ? context.getString(R.string.picture_tape)
 //                            : context.getString(R.string.picture_take_picture));
 //                }
-//                if (PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textTopDrawable != 0) {
-//                    tvCamera.setCompoundDrawablesWithIntrinsicBounds(0, PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textTopDrawable, 0, 0);
-//                }
-                tvCamera.setBackgroundResource(R.drawable.ic_camera);
+                if (PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textTopDrawable != 0) {
+                    tvCamera.setBackgroundResource(PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textTopDrawable);
+                }else{
+                    tvCamera.setBackgroundResource(R.drawable.ic_camera);
+                }
             } else {
 //                tvCamera.setText(config.chooseMode == PictureMimeType.ofAudio() ? context.getString(R.string.picture_tape)
 //                        : context.getString(R.string.picture_take_picture));
