@@ -264,7 +264,7 @@ public class PictureSelectorPreviewWeChatStyleActivity extends PicturePreviewAct
     public void onClick(View v) {
         super.onClick(v);
         int id = v.getId();
-        if (id == R.id.picture_right) {
+        if (id == R.id.picture_tv_ok) {
             boolean enable = selectData.size() != 0;
             if (enable) {
                 mTvPictureOk.performClick();
