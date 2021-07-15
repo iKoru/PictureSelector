@@ -10,7 +10,7 @@
 
     <include layout="@layout/picture_title_bar" />
 
-    <include layout="@layout/picture_bottom_bar" />
+<!--    <include layout="@layout/picture_bottom_bar" />-->
 
     <com.luck.picture.lib.widget.RecyclerPreloadView
         android:id="@+id/picture_recycler"

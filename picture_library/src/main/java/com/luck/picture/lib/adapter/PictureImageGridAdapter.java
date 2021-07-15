@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.fonts.FontFamily;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -386,24 +387,24 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
                 if (PictureSelectionConfig.uiStyle.picture_adapter_item_camera_backgroundColor != 0) {
                     itemView.setBackgroundColor(PictureSelectionConfig.uiStyle.picture_adapter_item_camera_backgroundColor);
                 }
-                if (PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textSize != 0) {
-                    tvCamera.setTextSize(PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textSize);
-                }
-                if (PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textColor != 0) {
-                    tvCamera.setTextColor(PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textColor);
-                }
-                if (PictureSelectionConfig.uiStyle.picture_adapter_item_camera_text != 0) {
-                    tvCamera.setText(itemView.getContext().getString(PictureSelectionConfig.uiStyle.picture_adapter_item_camera_text));
-                } else {
-                    tvCamera.setText(config.chooseMode == PictureMimeType.ofAudio() ? context.getString(R.string.picture_tape)
-                            : context.getString(R.string.picture_take_picture));
-                }
+//                if (PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textSize != 0) {
+//                    tvCamera.setTextSize(PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textSize);
+//                }
+//                if (PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textColor != 0) {
+//                    tvCamera.setTextColor(PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textColor);
+//                }
+//                if (PictureSelectionConfig.uiStyle.picture_adapter_item_camera_text != 0) {
+//                    tvCamera.setText(itemView.getContext().getString(PictureSelectionConfig.uiStyle.picture_adapter_item_camera_text));
+//                } else {
+//                    tvCamera.setText(config.chooseMode == PictureMimeType.ofAudio() ? context.getString(R.string.picture_tape)
+//                            : context.getString(R.string.picture_take_picture));
+//                }
                 if (PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textTopDrawable != 0) {
                     tvCamera.setCompoundDrawablesWithIntrinsicBounds(0, PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textTopDrawable, 0, 0);
                 }
             } else {
-                tvCamera.setText(config.chooseMode == PictureMimeType.ofAudio() ? context.getString(R.string.picture_tape)
-                        : context.getString(R.string.picture_take_picture));
+//                tvCamera.setText(config.chooseMode == PictureMimeType.ofAudio() ? context.getString(R.string.picture_tape)
+//                        : context.getString(R.string.picture_take_picture));
             }
         }
     }

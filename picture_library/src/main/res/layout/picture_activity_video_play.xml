@@ -20,13 +20,17 @@
         android:src="@drawable/picture_icon_video_play"
         android:visibility="invisible" />
 
-    <ImageButton
+    <TextView
         android:id="@+id/pictureLeftBack"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@color/picture_color_transparent"
-        android:scaleType="centerInside"
-        android:src="@drawable/picture_icon_back" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:textColor="@color/picture_color_161617"
+        android:text="@string/picture_cancel"/>
 
     <TextView
         android:id="@+id/tv_confirm"

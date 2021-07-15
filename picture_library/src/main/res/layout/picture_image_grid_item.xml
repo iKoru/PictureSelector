@@ -19,6 +19,7 @@
         android:background="@drawable/picture_checkbox_selector"
         android:gravity="center"
         android:textColor="@color/picture_color_white"
+        android:fontFamily="@font/monserrat_medium"
         android:textSize="12sp" />
 
     <View

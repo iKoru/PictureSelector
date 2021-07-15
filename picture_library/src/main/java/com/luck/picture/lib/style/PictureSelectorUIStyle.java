@@ -384,7 +384,7 @@ public class PictureSelectorUIStyle {
         uiStyle.picture_bottom_barBackgroundColor = Color.parseColor("#393a3e");
 
 
-        uiStyle.picture_adapter_item_camera_backgroundColor = Color.parseColor("#999999");
+        uiStyle.picture_adapter_item_camera_backgroundColor = R.color.picture_color_0b976a;
         uiStyle.picture_adapter_item_camera_textColor = Color.parseColor("#FFFFFF");
         uiStyle.picture_adapter_item_camera_textSize = 14;
         uiStyle.picture_adapter_item_camera_textTopDrawable = R.drawable.picture_icon_camera;
@@ -456,7 +456,7 @@ public class PictureSelectorUIStyle {
         uiStyle.picture_bottom_barBackgroundColor = Color.parseColor("#FAFAFA");
 
 
-        uiStyle.picture_adapter_item_camera_backgroundColor = Color.parseColor("#999999");
+        uiStyle.picture_adapter_item_camera_backgroundColor = R.color.picture_color_0b976a;
         uiStyle.picture_adapter_item_camera_textColor = Color.parseColor("#FFFFFF");
         uiStyle.picture_adapter_item_camera_textSize = 14;
         uiStyle.picture_adapter_item_camera_textTopDrawable = R.drawable.picture_icon_camera;
@@ -533,7 +533,7 @@ public class PictureSelectorUIStyle {
         uiStyle.picture_bottom_barBackgroundColor = Color.parseColor("#FFFFFF");
 
 
-        uiStyle.picture_adapter_item_camera_backgroundColor = Color.parseColor("#999999");
+        uiStyle.picture_adapter_item_camera_backgroundColor = R.color.picture_color_0b976a;
         uiStyle.picture_adapter_item_camera_textColor = Color.parseColor("#FFFFFF");
         uiStyle.picture_adapter_item_camera_textSize = 14;
         uiStyle.picture_adapter_item_camera_textTopDrawable = R.drawable.picture_icon_camera;
@@ -608,7 +608,7 @@ public class PictureSelectorUIStyle {
         uiStyle.picture_bottom_completeTextColor = new int[]{Color.parseColor("#9b9b9b"), Color.parseColor("#FA632D")};
         uiStyle.picture_bottom_barBackgroundColor = Color.parseColor("#393a3e");
 
-        uiStyle.picture_adapter_item_camera_backgroundColor = Color.parseColor("#999999");
+        uiStyle.picture_adapter_item_camera_backgroundColor = R.color.picture_color_0b976a;
         uiStyle.picture_adapter_item_camera_textColor = Color.parseColor("#FFFFFF");
         uiStyle.picture_adapter_item_camera_textSize = 14;
         uiStyle.picture_adapter_item_camera_textTopDrawable = R.drawable.picture_icon_camera;
