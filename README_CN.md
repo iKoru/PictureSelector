@@ -6,7 +6,7 @@
 
 [我的博客地址](http://blog.csdn.net/luck_mw)
 
-[体验 Demo](https://github.com/LuckSiege/PictureSelector/raw/master/app/demo/app_2021-05-14_014032_v2.7.0-rc03.apk)<br>
+[体验 Demo](https://github.com/LuckSiege/PictureSelector/raw/master/app/demo/demo_2021-11-14_122603_v2.7.3-rc10.apk)<br>
 
 [![](https://jitpack.io/v/LuckSiege/PictureSelector.svg)](https://jitpack.io/#LuckSiege/PictureSelector)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)](https://github.com/LuckSiege)
@@ -16,12 +16,31 @@
 
 ## 目录
 
+-[用前需知](https://github.com/LuckSiege/PictureSelector/wiki/%E7%94%A8%E5%89%8D%E9%9C%80%E7%9F%A5)<br> -[集成使用](#集成使用)<br> -[如何提 Issues?](https://github.com/LuckSiege/PictureSelector/wiki/%E5%A6%82%E4%BD%95%E6%8F%90Issues%3F)<br> -[功能特点](https://github.com/LuckSiege/PictureSelector/wiki/%E5%8A%9F%E8%83%BD%E7%89%B9%E7%82%B9)<br> -[PictureSelector 路径说明](https://github.com/LuckSiege/PictureSelector/wiki/PictureSelector-%E8%B7%AF%E5%BE%84%E8%AF%B4%E6%98%8E)<br> -[更新日志](https://github.com/LuckSiege/PictureSelector/releases/tag/v2.7.3-rc10)<br> -[主题配置-Xml 方式](https://github.com/LuckSiege/PictureSelector/wiki/%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%BB%E9%A2%98-Xml%E6%96%B9%E5%BC%8F)<br> -[主题配置-Code 方式](<https://github.com/LuckSiege/PictureSelector/wiki/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8A%A8%E6%80%81%E4%B8%BB%E9%A2%98(%E5%8C%85%E5%90%AB%E8%A3%81%E5%89%AA%E3%80%81%E7%9B%B8%E5%86%8C%E5%90%AF%E5%8A%A8%E5%8A%A8%E7%94%BB)-Code%E6%96%B9%E5%BC%8F>)<br> -[演示效果](#演示效果)<br> -[Api 说明](https://github.com/LuckSiege/PictureSelector/wiki/PictureSelector-Api%E8%AF%B4%E6%98%8E)<br> -[启动相册](#启动相册)<br> -[单独拍照](#单独拍照)<br> -[自定义相机](#自定义相机)<br> -[结果回调](https://github.com/LuckSiege/PictureSelector/wiki/%E7%BB%93%E6%9E%9C%E5%9B%9E%E8%B0%83)<br> -[常见错误](https://github.com/LuckSiege/PictureSelector/wiki/%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF)<br> -[缓存清除](#缓存清除)<br> -[混淆配置](#混淆配置)<br> -[License](#License)<br> -[兼容性测试](#兼容性测试)<br> -[联系方式](#联系方式)<br>
+
 -[用前需知](https://github.com/LuckSiege/PictureSelector/wiki/%E7%94%A8%E5%89%8D%E9%9C%80%E7%9F%A5)<br> -[如何提 Issues?](https://github.com/LuckSiege/PictureSelector/wiki/%E5%A6%82%E4%BD%95%E6%8F%90Issues%3F)<br> -[功能特点](https://github.com/LuckSiege/PictureSelector/wiki/%E5%8A%9F%E8%83%BD%E7%89%B9%E7%82%B9)<br> -[最新版本 v2.7.0-rc03](#最新版本)<br> -[更新日志](https://github.com/LuckSiege/PictureSelector/releases/tag/v2.7.0-rc03)<br> -[主题配置-Xml 方式](https://github.com/LuckSiege/PictureSelector/wiki/%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%BB%E9%A2%98-Xml%E6%96%B9%E5%BC%8F)<br> -[主题配置-Code 方式](<https://github.com/LuckSiege/PictureSelector/wiki/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8A%A8%E6%80%81%E4%B8%BB%E9%A2%98(%E5%8C%85%E5%90%AB%E8%A3%81%E5%89%AA%E3%80%81%E7%9B%B8%E5%86%8C%E5%90%AF%E5%8A%A8%E5%8A%A8%E7%94%BB)-Code%E6%96%B9%E5%BC%8F>)<br> -[演示效果](#演示效果)<br> -[集成方式](https://github.com/LuckSiege/PictureSelector/wiki/%E9%9B%86%E6%88%90%E6%96%B9%E5%BC%8F)<br> -[Api 说明](https://github.com/LuckSiege/PictureSelector/wiki/PictureSelector-Api%E8%AF%B4%E6%98%8E)<br> -[启动相册](#启动相册)<br> -[单独拍照](#单独拍照)<br> -[自定义相机](#自定义相机)<br> -[结果回调](https://github.com/LuckSiege/PictureSelector/wiki/%E7%BB%93%E6%9E%9C%E5%9B%9E%E8%B0%83)<br> -[常见错误](https://github.com/LuckSiege/PictureSelector/wiki/%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF)<br> -[缓存清除](#缓存清除)<br> -[混淆配置](#混淆配置)<br> -[License](#License)<br> -[兼容性测试](#兼容性测试)<br> -[联系方式](#联系方式)<br>
 
-## 最新版本
+## 集成使用
 
 ```sh
-implementation 'io.github.lucksiege:pictureselector:v2.7.0-rc03'
+repositories {
+  google()
+  mavenCentral()
+}
+
+dependencies {
+  implementation 'io.github.lucksiege:pictureselector:v2.7.3-rc10'
+}
+```
+
+Or Maven:
+
+```sh
+<dependency>
+  <groupId>io.github.lucksiege</groupId>
+  <artifactId>pictureselector</artifactId>
+  <version>v2.7.3-rc10</version>
+</dependency>
 ```
 
 ## 启动相册
@@ -33,7 +52,7 @@ implementation 'io.github.lucksiege:pictureselector:v2.7.0-rc03'
 ```sh
  PictureSelector.create(this)
    .openGallery(PictureMimeType.ofImage())
-   .loadImageEngine(GlideEngine.createGlideEngine()) // 请参考Demo GlideEngine.java
+   .imageEngine(GlideEngine.createGlideEngine()) // 请参考Demo GlideEngine.java
    .forResult(PictureConfig.CHOOSE_REQUEST);
 
     @Override
@@ -43,7 +62,7 @@ implementation 'io.github.lucksiege:pictureselector:v2.7.0-rc03'
             switch (requestCode) {
                 case PictureConfig.CHOOSE_REQUEST:
                     // 结果回调
-                    List<LocalMedia> selectList = PictureSelector.obtainMultipleResult(data);
+                    List<LocalMedia> result = PictureSelector.obtainMultipleResult(data);
                     break;
                 default:
                     break;
@@ -56,7 +75,7 @@ implementation 'io.github.lucksiege:pictureselector:v2.7.0-rc03'
 ```sh
  PictureSelector.create(this)
    .openGallery(PictureMimeType.ofAll())
-   .loadImageEngine(GlideEngine.createGlideEngine())
+   .imageEngine(GlideEngine.createGlideEngine())
    .forResult(new OnResultCallbackListener<LocalMedia>() {
        @Override
        public void onResult(List<LocalMedia> result) {
@@ -79,7 +98,7 @@ onActivityResult
 ```sh
  PictureSelector.create(this)
    .openCamera(PictureMimeType.ofImage())
-   .loadImageEngine(GlideEngine.createGlideEngine()) // 请参考Demo GlideEngine.java
+   .imageEngine(GlideEngine.createGlideEngine()) // 请参考Demo GlideEngine.java
    .forResult(PictureConfig.REQUEST_CAMERA); 
 
     @Override
@@ -89,7 +108,7 @@ onActivityResult
             switch (requestCode) {
                 case PictureConfig.REQUEST_CAMERA:
                     // 结果回调
-                    List<LocalMedia> selectList = PictureSelector.obtainMultipleResult(data);
+                    List<LocalMedia> result = PictureSelector.obtainMultipleResult(data);
                     break;
                 default:
                     break;
@@ -102,7 +121,7 @@ Callback
 ```sh
 PictureSelector.create(this)
    .openCamera(PictureMimeType.ofImage())
-   .loadImageEngine(GlideEngine.createGlideEngine())
+   .imageEngine(GlideEngine.createGlideEngine())
    .forResult(new OnResultCallbackListener<LocalMedia>() {
        @Override
        public void onResult(List<LocalMedia> result) {
@@ -147,9 +166,18 @@ Application 下实现如下接口
 
 ```sh
  //包括裁剪和压缩后的缓存，要在上传成功后调用，type 指的是图片or视频缓存取决于你设置的ofImage或ofVideo 注意：需要系统sd卡权限
- PictureFileUtils.deleteCacheDirFile(this,type);
+ PictureCacheManager.deleteCacheDirFile(this,type);
  // 清除所有缓存 例如：压缩、裁剪、视频、音频所生成的临时文件
- PictureFileUtils.deleteAllCacheDirFile(this);
+ PictureCacheManager.deleteAllCacheDirFile(this);
+ // 清除缓存且刷新图库
+ PictureCacheManager.deleteAllCacheDirRefreshFile(this);
+ // 清除缓存且刷新图库
+ PictureCacheManager.deleteAllCacheDirFile(this, new OnCallbackListener<String>() {
+            @Override
+            public void onCall(String absolutePath) {
+                // 清空缓存并刷新相册
+            }
+        });
 ```
 
 ## 预览图片
@@ -161,8 +189,8 @@ Application 下实现如下接口
 PictureSelector.create(this)
  .themeStyle(R.style.picture_default_style)
  .isNotPreviewDownload(true)
- .loadImageEngine(GlideEngine.createGlideEngine()) // 请参考Demo GlideEngine.java
- .openExternalPreview(position, selectList);
+ .imageEngine(GlideEngine.createGlideEngine()) // 请参考Demo GlideEngine.java
+ .openExternalPreview(position, result);
 
 ```
 
@@ -189,8 +217,7 @@ PictureSelector.create(this).externalPictureVideo(video_path);
 -keep class com.yalantispictureselector.ucrop** { *; }
 -keep interface com.yalantispictureselector.ucrop** { *; }
 
-#Okio
--dontwarn org.codehaus.mojo.animal_sniffer.*
+
 ```
 
 ## License
@@ -212,6 +239,12 @@ PictureSelector.create(this).externalPictureVideo(video_path);
 ```
 
 ## 联系方式
+
+Android 开发交流 新群 [662320389]() <br>
+Android 开发交流 群一 [619458861]() (已满) <br>
+Android 开发交流 群二 [679824206]() (已满) <br>
+Android 开发交流 群三 [854136996]() (已满) <br>
+QQ [893855882]() <br>
 
 Android 开发交流 群一 [619458861]() (已满) <br>
 Android 开发交流 群二 [679824206]() (已满) <br>

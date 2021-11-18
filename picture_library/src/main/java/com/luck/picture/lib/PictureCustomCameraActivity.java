@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,8 +15,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.luck.picture.lib.camera.CustomCameraType;
 import com.luck.picture.lib.camera.CustomCameraView;
 import com.luck.picture.lib.camera.listener.CameraListener;
+import com.luck.picture.lib.camera.listener.ClickListener;
 import com.luck.picture.lib.camera.view.CaptureLayout;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
@@ -23,8 +26,6 @@ import com.luck.picture.lib.config.PictureSelectionConfig;
 import com.luck.picture.lib.dialog.PictureCustomDialog;
 import com.luck.picture.lib.listener.OnPermissionDialogOptionCallback;
 import com.luck.picture.lib.permissions.PermissionChecker;
-
-import java.io.File;
 
 /**
  * @author：luck
@@ -54,70 +55,59 @@ public class PictureCustomCameraActivity extends PictureSelectorCameraEmptyActiv
         }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
-        // 验证存储权限
-        boolean isExternalStorage = PermissionChecker
-                .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) &&
-                PermissionChecker
-                        .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (!isExternalStorage) {
-            PermissionChecker.requestPermissions(this, new String[]{
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, PictureConfig.APPLY_STORAGE_PERMISSIONS_CODE);
-            return;
-        }
+        setContentView(R.layout.picture_custom_camera);
+        mCameraView = findViewById(R.id.cameraView);
+        initView();
+        requestCamera();
+    }
 
-        // 验证相机权限和麦克风权限
-        if (PermissionChecker
-                .checkSelfPermission(this, Manifest.permission.CAMERA)) {
-            boolean isRecordAudio = PermissionChecker.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
-            if (isRecordAudio) {
-                createCameraView();
+    private void requestCamera() {
+        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // 验证相机权限和麦克风权限
+            if (PermissionChecker.checkSelfPermission(this, Manifest.permission.CAMERA)) {
+                if (config.buttonFeatures == CustomCameraType.BUTTON_STATE_ONLY_CAPTURE) {
+                    mCameraView.initCamera();
+                } else {
+                    if (PermissionChecker.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)) {
+                        mCameraView.initCamera();
+                    } else {
+                        PermissionChecker.requestPermissions(this,
+                                new String[]{Manifest.permission.RECORD_AUDIO}, PictureConfig.APPLY_RECORD_AUDIO_PERMISSIONS_CODE);
+                    }
+                }
             } else {
                 PermissionChecker.requestPermissions(this,
-                        new String[]{Manifest.permission.RECORD_AUDIO}, PictureConfig.APPLY_RECORD_AUDIO_PERMISSIONS_CODE);
+                        new String[]{Manifest.permission.CAMERA}, PictureConfig.APPLY_CAMERA_PERMISSIONS_CODE);
             }
         } else {
-            PermissionChecker.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA}, PictureConfig.APPLY_CAMERA_PERMISSIONS_CODE);
+            PermissionChecker.requestPermissions(this, new String[]{
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, PictureConfig.APPLY_STORAGE_PERMISSIONS_CODE);
         }
     }
 
-    /**
-     * 创建CameraView
-     */
-    private void createCameraView() {
-        if (mCameraView == null) {
-            mCameraView = new CustomCameraView(getContext());
-            setContentView(mCameraView);
-            initView();
-        }
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
         // 这里只针对权限被手动拒绝后进入设置页面重新获取权限后的操作
         if (isEnterSetting) {
-            boolean isExternalStorage = PermissionChecker
-                    .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) &&
-                    PermissionChecker
-                            .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            if (isExternalStorage) {
-                boolean isCameraPermissionChecker = PermissionChecker
-                        .checkSelfPermission(this, Manifest.permission.CAMERA);
-                if (isCameraPermissionChecker) {
-                    boolean isRecordAudio = PermissionChecker
-                            .checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
-                    if (isRecordAudio) {
-                        createCameraView();
+            if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                if (PermissionChecker.checkSelfPermission(this, Manifest.permission.CAMERA)) {
+                    if (config.buttonFeatures == CustomCameraType.BUTTON_STATE_ONLY_CAPTURE) {
+                        mCameraView.initCamera();
                     } else {
-                        showPermissionsDialog(false, new String[]{Manifest.permission.RECORD_AUDIO}, getString(R.string.picture_audio));
+                        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)) {
+                            mCameraView.initCamera();
+                        } else {
+                            PermissionChecker.requestPermissions(this,
+                                    new String[]{Manifest.permission.RECORD_AUDIO}, PictureConfig.APPLY_RECORD_AUDIO_PERMISSIONS_CODE);
+                        }
                     }
                 } else {
                     showPermissionsDialog(false, new String[]{Manifest.permission.CAMERA}, getString(R.string.picture_camera));
                 }
             } else {
-                showPermissionsDialog(false, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, getString(R.string.picture_jurisdiction));
+                showPermissionsDialog(false, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, getString(R.string.picture_jurisdiction));
             }
             isEnterSetting = false;
         }
@@ -127,7 +117,6 @@ public class PictureCustomCameraActivity extends PictureSelectorCameraEmptyActiv
      * 初始化控件
      */
     protected void initView() {
-        mCameraView.setPictureSelectionConfig(config);
         // 视频最大拍摄时长
         if (config.recordVideoSecond > 0) {
             mCameraView.setRecordVideoMaxTime(config.recordVideoSecond);
@@ -137,31 +126,25 @@ public class PictureCustomCameraActivity extends PictureSelectorCameraEmptyActiv
             mCameraView.setRecordVideoMinTime(config.recordVideoMinSecond);
         }
         // 设置拍照时loading色值
-        if (config.captureLoadingColor != 0) {
-            mCameraView.setCaptureLoadingColor(config.captureLoadingColor);
-        }
-        // 获取CameraView
-        if (config.isCameraAroundState) {
-            mCameraView.toggleCamera();
-        }
+        mCameraView.setCaptureLoadingColor(config.captureLoadingColor);
         // 获取录制按钮
         CaptureLayout captureLayout = mCameraView.getCaptureLayout();
         if (captureLayout != null) {
             captureLayout.setButtonFeatures(config.buttonFeatures);
         }
         // 拍照预览
-        mCameraView.setImageCallbackListener((file, imageView) -> {
-            if (config != null && PictureSelectionConfig.imageEngine != null && file != null) {
-                PictureSelectionConfig.imageEngine.loadImage(getContext(), file.getAbsolutePath(), imageView);
+        mCameraView.setImageCallbackListener((url, imageView) -> {
+            if (config != null && PictureSelectionConfig.imageEngine != null) {
+                PictureSelectionConfig.imageEngine.loadImage(getContext(), url, imageView);
             }
         });
         // 设置拍照或拍视频回调监听
         mCameraView.setCameraListener(new CameraListener() {
             @Override
-            public void onPictureSuccess(@NonNull File file) {
+            public void onPictureSuccess(@NonNull String url) {
                 config.cameraMimeType = PictureMimeType.ofImage();
                 Intent intent = new Intent();
-                intent.putExtra(PictureConfig.EXTRA_MEDIA_PATH, file.getAbsolutePath());
+                intent.putExtra(PictureConfig.EXTRA_MEDIA_PATH, url);
                 intent.putExtra(PictureConfig.EXTRA_CONFIG, config);
                 if (config.camera) {
                     dispatchHandleCamera(intent);
@@ -172,10 +155,10 @@ public class PictureCustomCameraActivity extends PictureSelectorCameraEmptyActiv
             }
 
             @Override
-            public void onRecordSuccess(@NonNull File file) {
+            public void onRecordSuccess(@NonNull String url) {
                 config.cameraMimeType = PictureMimeType.ofVideo();
                 Intent intent = new Intent();
-                intent.putExtra(PictureConfig.EXTRA_MEDIA_PATH, file.getAbsolutePath());
+                intent.putExtra(PictureConfig.EXTRA_MEDIA_PATH, url);
                 intent.putExtra(PictureConfig.EXTRA_CONFIG, config);
                 if (config.camera) {
                     dispatchHandleCamera(intent);
@@ -192,7 +175,12 @@ public class PictureCustomCameraActivity extends PictureSelectorCameraEmptyActiv
         });
 
         //左边按钮点击事件
-        mCameraView.setOnClickListener(() -> onBackPressed());
+        mCameraView.setOnClickListener(new ClickListener() {
+            @Override
+            public void onClick() {
+                onBackPressed();
+            }
+        });
     }
 
     @Override
@@ -204,6 +192,14 @@ public class PictureCustomCameraActivity extends PictureSelectorCameraEmptyActiv
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            mCameraView.onCancelMedia();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PictureConfig.APPLY_STORAGE_PERMISSIONS_CODE:
@@ -212,15 +208,14 @@ public class PictureCustomCameraActivity extends PictureSelectorCameraEmptyActiv
                     PermissionChecker.requestPermissions(this,
                             new String[]{Manifest.permission.CAMERA}, PictureConfig.APPLY_CAMERA_PERMISSIONS_CODE);
                 } else {
-                    showPermissionsDialog(true, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, getString(R.string.picture_jurisdiction));
+                    showPermissionsDialog(true, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, getString(R.string.picture_jurisdiction));
                 }
                 break;
             case PictureConfig.APPLY_CAMERA_PERMISSIONS_CODE:
                 // 相机权限
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    boolean isRecordAudio = PermissionChecker.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
-                    if (isRecordAudio) {
-                        createCameraView();
+                    if (PermissionChecker.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)) {
+                        mCameraView.initCamera();
                     } else {
                         PermissionChecker.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PictureConfig.APPLY_RECORD_AUDIO_PERMISSIONS_CODE);
                     }
@@ -231,7 +226,7 @@ public class PictureCustomCameraActivity extends PictureSelectorCameraEmptyActiv
             case PictureConfig.APPLY_RECORD_AUDIO_PERMISSIONS_CODE:
                 // 录音权限
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    createCameraView();
+                    mCameraView.initCamera();
                 } else {
                     showPermissionsDialog(false, new String[]{Manifest.permission.RECORD_AUDIO}, getString(R.string.picture_audio));
                 }
@@ -290,13 +285,5 @@ public class PictureCustomCameraActivity extends PictureSelectorCameraEmptyActiv
             isEnterSetting = true;
         });
         dialog.show();
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (mCameraView != null) {
-            mCameraView.unbindCameraController();
-        }
-        super.onDestroy();
     }
 }

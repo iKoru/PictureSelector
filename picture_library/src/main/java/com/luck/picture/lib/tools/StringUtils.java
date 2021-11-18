@@ -39,7 +39,7 @@ public class StringUtils {
      */
     public static int stringToInt(String str) {
         Pattern pattern = Pattern.compile("^[-\\+]?[\\d]+$");
-        return pattern.matcher(str).matches() ? Integer.valueOf(str) : 0;
+        return pattern.matcher(str).matches() ? ValueOf.toInt(str) : 0;
     }
 
     /**
@@ -68,44 +68,44 @@ public class StringUtils {
      * @return
      */
     public static String rename(String fileName) {
-        String temp = fileName.substring(0, fileName.lastIndexOf("."));
-        String suffix = fileName.substring(fileName.lastIndexOf("."));
-        return temp + "_" + DateUtils.getCreateFileName() + suffix;
+        try {
+            String temp = fileName.substring(0, fileName.lastIndexOf("."));
+            String suffix = fileName.substring(fileName.lastIndexOf("."));
+            return temp + "_" + DateUtils.getCreateFileName() + suffix;
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return "";
     }
 
     /**
      * 重命名后缀
      *
-     * @param fileName
+     * @param fileName 文件名
      * @return
      */
     public static String renameSuffix(String fileName, String suffix) {
-        String temp = fileName.substring(0, fileName.lastIndexOf("."));
-        return temp + suffix;
+        try {
+            String temp = fileName.substring(0, fileName.lastIndexOf("."));
+            return temp + suffix;
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return "";
     }
 
     /**
      * getEncryptionValue
      *
-     * @param url
-     * @param width
-     * @param height
+     * @param id     资源id
+     * @param width  图片宽
+     * @param height 图片高
      * @return
      */
-    public static String getEncryptionValue(String url, int width, int height) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(url).append("_").append(width).append("x").append(height);
-        return ValueOf.toString(Math.abs(hash(stringBuilder.hashCode())));
-    }
-
-    /**
-     * hash
-     *
-     * @param key
-     * @return
-     */
-    public static final int hash(Object key) {
-        int h;
-        return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+    public static String getEncryptionValue(long id, int width, int height) {
+        if (width == 0 && height == 0) {
+            return id + "_" + System.currentTimeMillis();
+        }
+        return id + "_" + width + height;
     }
 }

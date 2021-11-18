@@ -5,7 +5,6 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.view.View;
@@ -24,14 +23,16 @@ import com.luck.picture.lib.adapter.PictureSimpleFragmentAdapter;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.config.PictureSelectionConfig;
-import com.luck.picture.lib.manager.UCropManager;
 import com.luck.picture.lib.entity.LocalMedia;
+import com.luck.picture.lib.entity.LocalMediaFolder;
 import com.luck.picture.lib.listener.OnQueryDataResultListener;
+import com.luck.picture.lib.manager.UCropManager;
 import com.luck.picture.lib.model.LocalMediaPageLoader;
 import com.luck.picture.lib.observable.ImagesObservable;
 import com.luck.picture.lib.tools.AttrsUtils;
-import com.luck.picture.lib.tools.MediaUtils;
+import com.luck.picture.lib.tools.PictureFileUtils;
 import com.luck.picture.lib.tools.ScreenUtils;
+import com.luck.picture.lib.tools.SdkVersionUtils;
 import com.luck.picture.lib.tools.StringUtils;
 import com.luck.picture.lib.tools.ToastUtils;
 import com.luck.picture.lib.tools.ValueOf;
@@ -52,13 +53,14 @@ import java.util.List;
  */
 public class PicturePreviewActivity extends PictureBaseActivity implements
         View.OnClickListener, PictureSimpleFragmentAdapter.OnCallBackActivity {
-    private static final String TAG = PicturePreviewActivity.class.getSimpleName();
+    public static final String TAG = PicturePreviewActivity.class.getSimpleName();
     protected ViewGroup mTitleBar;
     protected ImageView pictureLeftBack;
     protected TextView mTvPictureRight, tvMediaNum, tvTitle, mTvPictureOk;
     protected ImageView mIvArrow;
     protected PreviewViewPager viewPager;
     protected View mPicturePreview;
+    protected TextView mPictureEditor;
     protected int position;
     protected boolean isBottomPreview;
     private int totalNumber;
@@ -70,7 +72,6 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
     protected boolean refresh;
     protected int index;
     protected int screenWidth;
-    protected Handler mHandler;
     protected RelativeLayout selectBarLayout;
     protected CheckBox mCbOriginal;
     protected boolean isShowCamera;
@@ -89,6 +90,10 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
      */
     private int mPage = 0;
 
+    /**
+     * 当前文件大小
+     */
+    protected String fileSize;
 
     @Override
     public int getResourceId() {
@@ -112,7 +117,6 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
     @Override
     protected void initWidgets() {
         super.initWidgets();
-        mHandler = new Handler();
         mTitleBar = findViewById(R.id.titleBar);
         screenWidth = ScreenUtils.getScreenWidth(this);
         animation = AnimationUtils.loadAnimation(this, R.anim.picture_anim_modal_in);
@@ -121,6 +125,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
         mIvArrow = findViewById(R.id.ivArrow);
         viewPager = findViewById(R.id.preview_pager);
         mPicturePreview = findViewById(R.id.picture_id_preview);
+        mPictureEditor = findViewById(R.id.picture_id_editor);
         btnCheck = findViewById(R.id.btnCheck);
         check = findViewById(R.id.check);
         pictureLeftBack.setOnClickListener(this);
@@ -138,6 +143,12 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
         check.setVisibility(View.VISIBLE);
         btnCheck.setVisibility(View.VISIBLE);
 
+        if (config.isEditorImage) {
+            mPictureEditor.setVisibility(View.VISIBLE);
+            mPictureEditor.setOnClickListener(this);
+        } else {
+            mPictureEditor.setVisibility(View.GONE);
+        }
         position = getIntent().getIntExtra(PictureConfig.EXTRA_POSITION, 0);
         if (numComplete) {
             initCompleteText(0);
@@ -156,26 +167,35 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
             List<LocalMedia> data = getIntent().getParcelableArrayListExtra(PictureConfig.EXTRA_PREVIEW_SELECT_LIST);
             initViewPageAdapterData(data);
         } else {
-            List<LocalMedia> data = new ArrayList<>(ImagesObservable.getInstance().readPreviewMediaData());
-            boolean isEmpty = data.size() == 0;
+            List<LocalMedia> data = ImagesObservable.getInstance().getData();
+            List<LocalMedia> allAlbumList = new ArrayList<>(data);
+            ImagesObservable.getInstance().clearData();
             totalNumber = getIntent().getIntExtra(PictureConfig.EXTRA_DATA_COUNT, 0);
-            if (config.isPageStrategy) {
-                if (isEmpty) {
-                    // 这种情况有可能是单例被回收了导致readPreviewMediaData();返回的数据为0，那就从第一页开始加载吧
+            if (config.isPageStrategy && !config.isOnlySandboxDir) {
+                if (allAlbumList.size() == 0) {
                     setNewTitle();
+                    initViewPageAdapterData(allAlbumList);
+                    loadData();
                 } else {
                     mPage = getIntent().getIntExtra(PictureConfig.EXTRA_PAGE, 0);
+                    initViewPageAdapterData(allAlbumList);
                 }
-                initViewPageAdapterData(data);
-                loadData();
-                setTitle();
             } else {
-                initViewPageAdapterData(data);
-                if (isEmpty) {
-                    // 这种情况有可能是单例被回收了导致readPreviewMediaData();返回的数据为0，暂时自动切换成分页模式去获取数据
-                    config.isPageStrategy = true;
-                    setNewTitle();
-                    loadData();
+                initViewPageAdapterData(allAlbumList);
+                if (allAlbumList.size() == 0) {
+                    if (config.isOnlySandboxDir) {
+                        mLoader.loadOnlyInAppDirectoryAllMedia(new OnQueryDataResultListener<LocalMediaFolder>(){
+                            @Override
+                            public void onComplete(LocalMediaFolder data) {
+                                initViewPageAdapterData(data != null ? data.getData() : allAlbumList);
+                            }
+                        });
+                    } else {
+                        config.isPageStrategy = true;
+                        mLoader = new LocalMediaPageLoader(getContext(), config);
+                        setNewTitle();
+                        loadData();
+                    }
                 }
             }
         }
@@ -204,13 +224,22 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                 }
 
                 if (config.isOriginalControl) {
-                    boolean isHasVideo = PictureMimeType.isHasVideo(media.getMimeType());
-                    mCbOriginal.setVisibility(isHasVideo ? View.GONE : View.VISIBLE);
                     mCbOriginal.setChecked(config.isCheckOriginalImage);
+                    if (config.isDisplayOriginalSize) {
+                        fileSize = PictureFileUtils.formatFileSize(media.getSize(), 2);
+                        mCbOriginal.setText(getString(R.string.picture_original_image, fileSize));
+                    } else {
+                        mCbOriginal.setText(getString(R.string.picture_default_original_image));
+                    }
+                }
+                if (config.isEditorImage) {
+                    mPictureEditor.setVisibility(PictureMimeType.isHasVideo(media.getMimeType()) ? View.GONE : View.VISIBLE);
+                } else {
+                    mPictureEditor.setVisibility(View.GONE);
                 }
                 onPageSelectedChange(media);
 
-                if (config.isPageStrategy && !isBottomPreview) {
+                if (config.isPageStrategy && !isBottomPreview && !config.isOnlySandboxDir) {
                     if (isHasMore) {
                         // 滑到adapter.getSize() - PictureConfig.MIN_PAGE_SIZE时或最后一条时预加载
                         if (position == (adapter.getSize() - 1) - PictureConfig.MIN_PAGE_SIZE || position == adapter.getSize() - 1) {
@@ -233,6 +262,11 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
             mCbOriginal.setChecked(config.isCheckOriginalImage);
             mCbOriginal.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 config.isCheckOriginalImage = isChecked;
+                if (selectData.size() == 0) {
+                    if (isChecked) {
+                        onCheckedComplete();
+                    }
+                }
             });
         }
     }
@@ -243,10 +277,14 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
     private void loadData() {
         long bucketId = getIntent().getLongExtra(PictureConfig.EXTRA_BUCKET_ID, -1);
         mPage++;
-        LocalMediaPageLoader.getInstance(getContext()).loadPageMediaData(bucketId, mPage, config.pageSize,
-                (OnQueryDataResultListener<LocalMedia>) (result, currentPage, isHasMore) -> {
-                    if (!isFinishing()) {
-                        this.isHasMore = isHasMore;
+        mLoader.loadPageMediaData(bucketId, mPage, config.pageSize,
+                new OnQueryDataResultListener<LocalMedia>() {
+                    @Override
+                    public void onComplete(List<LocalMedia> result, int currentPage, boolean isHasMore) {
+                        if (isFinishing()) {
+                            return;
+                        }
+                        PicturePreviewActivity.this.isHasMore = isHasMore;
                         if (isHasMore) {
                             int size = result.size();
                             if (size > 0 && adapter != null) {
@@ -267,10 +305,14 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
     private void loadMoreData() {
         long bucketId = getIntent().getLongExtra(PictureConfig.EXTRA_BUCKET_ID, -1);
         mPage++;
-        LocalMediaPageLoader.getInstance(getContext()).loadPageMediaData(bucketId, mPage, config.pageSize,
-                (OnQueryDataResultListener<LocalMedia>) (result, currentPage, isHasMore) -> {
-                    if (!isFinishing()) {
-                        this.isHasMore = isHasMore;
+        mLoader.loadPageMediaData(bucketId, mPage, config.pageSize,
+                new OnQueryDataResultListener<LocalMedia>() {
+                    @Override
+                    public void onComplete(List<LocalMedia> result, int currentPage, boolean isHasMore) {
+                        if (isFinishing()) {
+                            return;
+                        }
+                        PicturePreviewActivity.this.isHasMore = isHasMore;
                         if (isHasMore) {
                             int size = result.size();
                             if (size > 0 && adapter != null) {
@@ -397,6 +439,15 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                 params.height = PictureSelectionConfig.uiStyle.picture_bottom_barHeight;
             }
 
+            if (config.isEditorImage) {
+                if (PictureSelectionConfig.uiStyle.picture_bottom_preview_editorTextSize != 0) {
+                    mPictureEditor.setTextSize(PictureSelectionConfig.uiStyle.picture_bottom_preview_editorTextSize);
+                }
+                if (PictureSelectionConfig.uiStyle.picture_bottom_preview_editorTextColor != 0) {
+                    mPictureEditor.setTextColor(PictureSelectionConfig.uiStyle.picture_bottom_preview_editorTextColor);
+                }
+            }
+
             if (config.isOriginalControl) {
                 if (PictureSelectionConfig.uiStyle.picture_bottom_originalPictureCheckStyle != 0) {
                     mCbOriginal.setButtonDrawable(PictureSelectionConfig.uiStyle.picture_bottom_originalPictureCheckStyle);
@@ -444,6 +495,16 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                 ViewGroup.LayoutParams params = mTitleBar.getLayoutParams();
                 params.height = PictureSelectionConfig.style.pictureTitleBarHeight;
             }
+
+            if (config.isEditorImage) {
+                if (PictureSelectionConfig.style.picturePreviewEditorTextSize != 0) {
+                    mPictureEditor.setTextSize(PictureSelectionConfig.style.picturePreviewEditorTextSize);
+                }
+                if (PictureSelectionConfig.style.picturePreviewEditorTextColor != 0) {
+                    mPictureEditor.setTextColor(PictureSelectionConfig.style.picturePreviewEditorTextColor);
+                }
+            }
+
             if (config.isOriginalControl) {
                 if (PictureSelectionConfig.style.pictureOriginalControlStyle != 0) {
                     mCbOriginal.setButtonDrawable(PictureSelectionConfig.style.pictureOriginalControlStyle);
@@ -553,7 +614,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
      * @param list
      */
     private void initViewPageAdapterData(List<LocalMedia> list) {
-        adapter = new PictureSimpleFragmentAdapter(config, this);
+        adapter = new PictureSimpleFragmentAdapter(getContext(), config, this);
         adapter.bindData(list);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(position);
@@ -562,10 +623,23 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
         LocalMedia media = adapter.getItem(position);
         if (media != null) {
             index = media.getPosition();
+            if (config.isOriginalControl) {
+                if (config.isDisplayOriginalSize) {
+                    fileSize = PictureFileUtils.formatFileSize(media.getSize(), 2);
+                    mCbOriginal.setText(getString(R.string.picture_original_image, fileSize));
+                } else {
+                     mCbOriginal.setText(getString(R.string.picture_default_original_image));
+                }
+            }
             if (config.checkNumMode) {
                 tvMediaNum.setSelected(true);
                 check.setText(ValueOf.toString(media.getNum()));
                 notifyCheckChanged(media);
+            }
+            if (config.isEditorImage) {
+                mPictureEditor.setVisibility(PictureMimeType.isHasVideo(media.getMimeType()) ? View.GONE : View.VISIBLE);
+            } else {
+                mPictureEditor.setVisibility(View.GONE);
             }
         }
     }
@@ -583,7 +657,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
      * 设置标题
      */
     private void setTitle() {
-        if (config.isPageStrategy && !isBottomPreview) {
+        if (config.isPageStrategy && !isBottomPreview && !config.isOnlySandboxDir) {
             tvTitle.setText(getString(R.string.picture_preview_image_num,
                     position + 1, totalNumber));
         } else {
@@ -604,7 +678,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                 if (media.getPath().equals(imageBean.getPath())
                         || media.getId() == imageBean.getId()) {
                     imageBean.setNum(media.getNum());
-                    check.setText(String.valueOf(imageBean.getNum()));
+                    check.setText(ValueOf.toString(imageBean.getNum()));
                 }
             }
         }
@@ -677,7 +751,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                     tvMediaNum.startAnimation(animation);
                 }
                 tvMediaNum.setVisibility(View.VISIBLE);
-                tvMediaNum.setText(String.valueOf(selectData.size()));
+                tvMediaNum.setText(ValueOf.toString(selectData.size()));
                 if (PictureSelectionConfig.uiStyle != null) {
                     if (PictureSelectionConfig.uiStyle.picture_bottom_completeNormalText != 0) {
                         mTvPictureOk.setText(PictureSelectionConfig.uiStyle.picture_bottom_completeNormalText);
@@ -728,6 +802,15 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
             onComplete();
         } else if (id == R.id.btnCheck) {
             onCheckedComplete();
+        } else if (id == R.id.picture_id_editor) {
+            onEditorImage();
+        }
+    }
+
+    protected void onEditorImage() {
+        if (adapter.getSize() > 0) {
+            LocalMedia image = adapter.getItem(viewPager.getCurrentItem());
+            UCropManager.ofEditorImage(this, image.getPath(), image.getMimeType(),image.getWidth(),image.getHeight());
         }
     }
 
@@ -850,38 +933,11 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                 if (config.selectionMode == PictureConfig.SINGLE) {
                     selectData.clear();
                 }
-
-                // 如果宽高为0，重新获取宽高
-                if (image.getWidth() == 0 || image.getHeight() == 0) {
-                    image.setOrientation(-1);
-                    if (PictureMimeType.isContent(image.getPath())) {
-                        if (PictureMimeType.isHasVideo(image.getMimeType())) {
-                            MediaUtils.getVideoSizeForUri(getContext(), Uri.parse(image.getPath()), image);
-                        } else if (PictureMimeType.isHasImage(image.getMimeType())) {
-                            int[] size = MediaUtils.getImageSizeForUri(getContext(), Uri.parse(image.getPath()));
-                            image.setWidth(size[0]);
-                            image.setHeight(size[1]);
-                        }
-                    } else {
-                        if (PictureMimeType.isHasVideo(image.getMimeType())) {
-                            int[] size = MediaUtils.getVideoSizeForUrl(image.getPath());
-                            image.setWidth(size[0]);
-                            image.setHeight(size[1]);
-                        } else if (PictureMimeType.isHasImage(image.getMimeType())) {
-                            int[] size = MediaUtils.getImageSizeForUrl(image.getPath());
-                            image.setWidth(size[0]);
-                            image.setHeight(size[1]);
-                        }
-                    }
-                }
-
-                // 如果有旋转信息图片宽高则是相反
-                MediaUtils.setOrientationAsynchronous(getContext(), image, config.isAndroidQChangeWH, config.isAndroidQChangeVideoWH, null);
                 selectData.add(image);
                 onSelectedChange(true, image);
                 image.setNum(selectData.size());
                 if (config.checkNumMode) {
-                    check.setText(String.valueOf(image.getNum()));
+                    check.setText(ValueOf.toString(image.getNum()));
                 }
             } else {
                 int size = selectData.size();
@@ -908,6 +964,15 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
      * @param media
      */
     protected void onSelectedChange(boolean isAddRemove, LocalMedia media) {
+
+    }
+
+    /**
+     * 更新画廊数据
+     *
+     * @param media
+     */
+    protected void onUpdateGalleryChange(LocalMedia media) {
 
     }
 
@@ -969,10 +1034,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
         }
         isCompleteOrSelected = true;
         isChangeSelectedData = true;
-        if (config.isCheckOriginalImage) {
-            onBackPressed();
-            return;
-        }
+
         if (config.chooseMode == PictureMimeType.ofAll() && config.isWithVideoImage) {
             bothMimeTypeWith(mimeType, image);
         } else {
@@ -987,12 +1049,12 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
      * @param image
      */
     private void bothMimeTypeWith(String mimeType, LocalMedia image) {
-        if (config.enableCrop) {
+        if (config.enableCrop && !config.isCheckOriginalImage) {
             isCompleteOrSelected = false;
             boolean isHasImage = PictureMimeType.isHasImage(mimeType);
             if (config.selectionMode == PictureConfig.SINGLE && isHasImage) {
                 config.originalPath = image.getPath();
-                UCropManager.ofCrop(this, config.originalPath, image.getMimeType());
+                UCropManager.ofCrop(this, config.originalPath, image.getMimeType(),image.getWidth(),image.getHeight());
             } else {
                 // 是图片和选择压缩并且是多张，调用批量压缩
                 int imageNum = 0;
@@ -1028,11 +1090,11 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
      * @param image
      */
     private void separateMimeTypeWith(String mimeType, LocalMedia image) {
-        if (config.enableCrop && PictureMimeType.isHasImage(mimeType)) {
+        if (config.enableCrop && !config.isCheckOriginalImage && PictureMimeType.isHasImage(mimeType)) {
             isCompleteOrSelected = false;
             if (config.selectionMode == PictureConfig.SINGLE) {
                 config.originalPath = image.getPath();
-                UCropManager.ofCrop(this, config.originalPath, image.getMimeType());
+                UCropManager.ofCrop(this, config.originalPath, image.getMimeType(),image.getWidth(),image.getHeight());
             } else {
                 // 是图片和选择压缩并且是多张，调用批量压缩
                 UCropManager.ofCrop(this, (ArrayList<LocalMedia>) selectData);
@@ -1058,11 +1120,61 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                     break;
                 case UCrop.REQUEST_CROP:
                     if (data != null) {
-                        data.putParcelableArrayListExtra(PictureConfig.EXTRA_SELECT_LIST,
-                                (ArrayList<? extends Parcelable>) selectData);
-                        setResult(RESULT_OK, data);
+                        boolean isEditorImage = data.getBooleanExtra(UCrop.EXTRA_EDITOR_IMAGE, false);
+                        if (isEditorImage) {
+                            Uri resultUri = UCrop.getOutput(data);
+                            if (resultUri != null && adapter != null) {
+                                String cutPath = resultUri.getPath();
+                                LocalMedia curLocalMedia = adapter.getItem(viewPager.getCurrentItem());
+                                LocalMedia selectLocalMedia = null;
+                                boolean isExits = false;
+                                for (int i = 0; i < selectData.size(); i++) {
+                                    LocalMedia item = selectData.get(i);
+                                    if (TextUtils.equals(curLocalMedia.getPath(), item.getPath()) || curLocalMedia.getId() == item.getId()) {
+                                        isExits = true;
+                                        selectLocalMedia = item;
+                                        break;
+                                    }
+                                }
+                                // 更新当前适配选中的LocalMedia裁剪参数
+                                curLocalMedia.setCut(!TextUtils.isEmpty(cutPath));
+                                curLocalMedia.setCutPath(cutPath);
+                                curLocalMedia.setCropOffsetX(data.getIntExtra(UCrop.EXTRA_OUTPUT_OFFSET_X, 0));
+                                curLocalMedia.setCropOffsetY(data.getIntExtra(UCrop.EXTRA_OUTPUT_OFFSET_Y, 0));
+                                curLocalMedia.setCropResultAspectRatio(data.getFloatExtra(UCrop.EXTRA_OUTPUT_CROP_ASPECT_RATIO, 0));
+                                curLocalMedia.setCropImageWidth(data.getIntExtra(UCrop.EXTRA_OUTPUT_IMAGE_WIDTH, 0));
+                                curLocalMedia.setCropImageHeight(data.getIntExtra(UCrop.EXTRA_OUTPUT_IMAGE_HEIGHT, 0));
+                                curLocalMedia.setEditorImage(curLocalMedia.isCut());
+                                if (SdkVersionUtils.isQ() && PictureMimeType.isContent(curLocalMedia.getPath())) {
+                                    curLocalMedia.setAndroidQToPath(cutPath);
+                                }
+                                if (isExits) {
+                                    // 更新当前选中列表的LocalMedia裁剪参数
+                                    selectLocalMedia.setCut(!TextUtils.isEmpty(cutPath));
+                                    selectLocalMedia.setCutPath(cutPath);
+                                    selectLocalMedia.setCropOffsetX(data.getIntExtra(UCrop.EXTRA_OUTPUT_OFFSET_X, 0));
+                                    selectLocalMedia.setCropOffsetY(data.getIntExtra(UCrop.EXTRA_OUTPUT_OFFSET_Y, 0));
+                                    selectLocalMedia.setCropResultAspectRatio(data.getFloatExtra(UCrop.EXTRA_OUTPUT_CROP_ASPECT_RATIO, 0));
+                                    selectLocalMedia.setCropImageWidth(data.getIntExtra(UCrop.EXTRA_OUTPUT_IMAGE_WIDTH, 0));
+                                    selectLocalMedia.setCropImageHeight(data.getIntExtra(UCrop.EXTRA_OUTPUT_IMAGE_HEIGHT, 0));
+                                    selectLocalMedia.setEditorImage(curLocalMedia.isCut());
+                                    if (SdkVersionUtils.isQ() && PictureMimeType.isContent(curLocalMedia.getPath())) {
+                                        selectLocalMedia.setAndroidQToPath(cutPath);
+                                    }
+                                    isChangeSelectedData = true;
+                                    onUpdateGalleryChange(selectLocalMedia);
+                                } else {
+                                    onCheckedComplete();
+                                }
+                                adapter.notifyDataSetChanged();
+                            }
+                        } else {
+                            data.putParcelableArrayListExtra(PictureConfig.EXTRA_SELECT_LIST,
+                                    (ArrayList<? extends Parcelable>) selectData);
+                            setResult(RESULT_OK, data);
+                            finish();
+                        }
                     }
-                    finish();
                     break;
             }
         } else if (resultCode == UCrop.RESULT_ERROR) {
@@ -1105,21 +1217,16 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
         outState.putBoolean(PictureConfig.EXTRA_COMPLETE_SELECTED, isCompleteOrSelected);
         outState.putBoolean(PictureConfig.EXTRA_CHANGE_SELECTED_DATA, isChangeSelectedData);
         PictureSelector.saveSelectorList(outState, selectData);
+        if (adapter != null) {
+            ImagesObservable.getInstance().saveData(adapter.getData());
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (!isOnSaveInstanceState) {
-            ImagesObservable.getInstance().clearPreviewMediaData();
-        }
-        if (mHandler != null) {
-            mHandler.removeCallbacksAndMessages(null);
-            mHandler = null;
-        }
         if (animation != null) {
             animation.cancel();
-            animation = null;
         }
         if (adapter != null) {
             adapter.clear();

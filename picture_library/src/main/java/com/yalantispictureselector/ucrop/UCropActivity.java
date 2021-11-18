@@ -60,6 +60,9 @@ import com.yalantispictureselector.ucrop.view.TransformImageView;
 import com.yalantispictureselector.ucrop.view.UCropView;
 import com.yalantispictureselector.ucrop.view.widget.AspectRatioTextView;
 import com.yalantispictureselector.ucrop.view.widget.HorizontalProgressWheelView;
+import com.luck.picture.lib.immersive.ImmersiveManage;
+import com.luck.picture.lib.tools.PictureFileUtils;
+import com.luck.picture.lib.tools.ScreenUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -88,7 +91,7 @@ public class UCropActivity extends AppCompatActivity {
      * 具体沉浸的样式，可以根据需要自行修改状态栏和导航栏的颜色
      */
     public void immersive() {
-        CropImmersiveManage.immersiveAboveAPI23(this
+        ImmersiveManage.immersiveAboveAPI23(this
                 , mStatusBarColor
                 , mToolbarColor
                 , isOpenWhiteStatusBar);
@@ -280,7 +283,9 @@ public class UCropActivity extends AppCompatActivity {
                 boolean isOnTouch = isOnTouch(inputUri);
                 mGestureCropImageView.setRotateEnabled(isOnTouch ? isRotateEnabled : isOnTouch);
                 mGestureCropImageView.setScaleEnabled(isOnTouch ? isScaleEnabled : isOnTouch);
-                mGestureCropImageView.setImageUri(inputUri, outputUri);
+                int inputImageWidth = intent.getIntExtra(UCrop.Options.EXTRA_INPUT_IMAGE_WIDTH, 0);
+                int inputImageHeight = intent.getIntExtra(UCrop.Options.EXTRA_INPUT_IMAGE_HEIGHT, 0);
+                mGestureCropImageView.setImageUri(inputUri, outputUri, inputImageWidth, inputImageHeight);
             } catch (Exception e) {
                 setResultError(e);
                 onBackPressed();
@@ -322,7 +327,7 @@ public class UCropActivity extends AppCompatActivity {
         } else {
             String mimeType = PictureMimeType.getMimeTypeFromMediaContentUri(this, inputUri);
             if (mimeType.endsWith("image/*")) {
-                String path = FileUtils.getPath(this, inputUri);
+                String path = PictureFileUtils.getPath(this, inputUri);
                 mimeType = PictureMimeType.getImageMimeType(path);
             }
             return !PictureMimeType.isGif(mimeType);
@@ -366,7 +371,13 @@ public class UCropActivity extends AppCompatActivity {
         mGestureCropImageView.setImageToWrapCropBoundsAnimDuration(intent.getIntExtra(UCrop.Options.EXTRA_IMAGE_TO_CROP_BOUNDS_ANIM_DURATION, CropImageView.DEFAULT_IMAGE_TO_CROP_BOUNDS_ANIM_DURATION));
 
         // Overlay view options
-        mOverlayView.setFreestyleCropEnabled(intent.getBooleanExtra(UCrop.Options.EXTRA_FREE_STYLE_CROP, OverlayView.DEFAULT_FREESTYLE_CROP_MODE != OverlayView.FREESTYLE_CROP_MODE_DISABLE));
+        int freeStyleCropMode = intent.getIntExtra(UCrop.Options.EXTRA_FREE_STYLE_CROP_MODE, -1);
+        if (freeStyleCropMode == -1 || freeStyleCropMode > OverlayView.FREESTYLE_CROP_MODE_ENABLE_WITH_PASS_THROUGH) {
+            mOverlayView.setFreestyleCropEnabled(intent.getBooleanExtra(UCrop.Options.EXTRA_FREE_STYLE_CROP, OverlayView.DEFAULT_FREESTYLE_CROP_MODE != OverlayView.FREESTYLE_CROP_MODE_DISABLE));
+        } else {
+            mOverlayView.setFreestyleCropMode(freeStyleCropMode);
+        }
+        mOverlayView.setDragSmoothToCenter(intent.getBooleanExtra(UCrop.Options.EXTRA_DRAG_SMOOTH_CENTER, false));
         mOverlayView.setDragFrame(isDragFrame);
         mOverlayView.setDimmedColor(intent.getIntExtra(UCrop.Options.EXTRA_DIMMED_LAYER_COLOR, getResources().getColor(R.color.ucrop_color_default_dimmed)));
         mOverlayView.setCircleDimmedLayer(intent.getBooleanExtra(UCrop.Options.EXTRA_CIRCLE_DIMMED_LAYER, OverlayView.DEFAULT_CIRCLE_DIMMED_LAYER));
@@ -825,6 +836,7 @@ public class UCropActivity extends AppCompatActivity {
                 .putExtra(UCrop.EXTRA_OUTPUT_IMAGE_HEIGHT, imageHeight)
                 .putExtra(UCrop.EXTRA_OUTPUT_OFFSET_X, offsetX)
                 .putExtra(UCrop.EXTRA_OUTPUT_OFFSET_Y, offsetY)
+                .putExtra(UCrop.EXTRA_EDITOR_IMAGE, getIntent().getBooleanExtra(UCrop.Options.EXTRA_EDITOR_IMAGE, false))
         );
     }
 

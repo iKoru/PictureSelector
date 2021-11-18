@@ -24,7 +24,6 @@ import com.yalantispictureselector.ucrop.model.AspectRatio;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -47,6 +46,7 @@ public class UCrop {
     public static final String EXTRA_OUTPUT_IMAGE_HEIGHT = EXTRA_PREFIX + ".ImageHeight";
     public static final String EXTRA_OUTPUT_OFFSET_X = EXTRA_PREFIX + ".OffsetX";
     public static final String EXTRA_OUTPUT_OFFSET_Y = EXTRA_PREFIX + ".OffsetY";
+    public static final String EXTRA_EDITOR_IMAGE = EXTRA_PREFIX + ".EditorImage";
     public static final String EXTRA_ERROR = EXTRA_PREFIX + ".Error";
 
     public static final String EXTRA_ASPECT_RATIO_X = EXTRA_PREFIX + ".AspectRatioX";
@@ -373,7 +373,11 @@ public class UCrop {
         public static final String EXTRA_UCROP_LOGO_COLOR = EXTRA_PREFIX + ".UcropLogoColor";
 
         public static final String EXTRA_HIDE_BOTTOM_CONTROLS = EXTRA_PREFIX + ".HideBottomControls";
+        public static final String EXTRA_EDITOR_IMAGE = EXTRA_PREFIX + ".EditorImage";
         public static final String EXTRA_FREE_STYLE_CROP = EXTRA_PREFIX + ".FreeStyleCrop";
+        public static final String EXTRA_FREE_STYLE_CROP_MODE = EXTRA_PREFIX + ".FreeStyleCropMode";
+
+        public static final String EXTRA_DRAG_SMOOTH_CENTER = EXTRA_PREFIX + ".DragSmoothToCenter";
 
         public static final String EXTRA_ASPECT_RATIO_SELECTED_BY_DEFAULT = EXTRA_PREFIX + ".AspectRatioSelectedByDefault";
         public static final String EXTRA_ASPECT_RATIO_OPTIONS = EXTRA_PREFIX + ".AspectRatioOptions";
@@ -396,6 +400,8 @@ public class UCrop {
         public static final String EXTRA_WITH_VIDEO_IMAGE = EXTRA_PREFIX + ".isWithVideoImage";
         public static final String EXTRA_OUTPUT_URI_LIST = EXTRA_PREFIX + ".OutputUriList";
         public static final String EXTRA_WINDOW_EXIT_ANIMATION = EXTRA_PREFIX + ".WindowAnimation";
+        public static final String EXTRA_INPUT_IMAGE_WIDTH = EXTRA_PREFIX + ".InputImageWidth";
+        public static final String EXTRA_INPUT_IMAGE_HEIGHT = EXTRA_PREFIX + ".InputImageHeight";
 
         private final Bundle mOptionBundle;
 
@@ -703,10 +709,33 @@ public class UCrop {
         }
 
         /**
+         * Edit pictures
+         *
+         * @param isEditor
+         */
+        public void setEditorImage(boolean isEditor) {
+            mOptionBundle.putBoolean(EXTRA_EDITOR_IMAGE, isEditor);
+        }
+
+        /**
          * @param enabled - set to true to let user resize crop bounds (disabled by default)
          */
         public void setFreeStyleCropEnabled(boolean enabled) {
             mOptionBundle.putBoolean(EXTRA_FREE_STYLE_CROP, enabled);
+        }
+
+        /**
+         * @param freestyleCropMode set crop freestyle mode
+         */
+        public void setFreestyleCropMode(int freestyleCropMode) {
+            mOptionBundle.putInt(EXTRA_FREE_STYLE_CROP_MODE,freestyleCropMode);
+        }
+
+        /**
+         * @param isDragCenter Crop and drag automatically center
+         */
+        public void setCropDragSmoothToCenter(boolean isDragCenter) {
+            mOptionBundle.putBoolean(EXTRA_DRAG_SMOOTH_CENTER, isDragCenter);
         }
 
         /**
@@ -716,6 +745,23 @@ public class UCrop {
             mOptionBundle.putInt(EXTRA_WINDOW_EXIT_ANIMATION, activityCropExitAnimation);
         }
 
+        /**
+         * Input image data width
+         *
+         * @param width
+         */
+        public void setInputImageWidth(int width) {
+            mOptionBundle.putInt(EXTRA_INPUT_IMAGE_WIDTH, width);
+        }
+
+        /**
+         * Input image data height
+         *
+         * @param height
+         */
+        public void setInputImageHeight(int height) {
+            mOptionBundle.putInt(EXTRA_INPUT_IMAGE_HEIGHT, height);
+        }
 
         /**
          * @param navBarColor set NavBar Color

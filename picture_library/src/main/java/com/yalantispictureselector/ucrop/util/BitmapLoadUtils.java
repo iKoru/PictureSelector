@@ -2,7 +2,6 @@ package com.yalantispictureselector.ucrop.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -17,6 +16,7 @@ import androidx.exifinterface.media.ExifInterface;
 
 import com.yalantispictureselector.ucrop.callback.BitmapLoadCallback;
 import com.yalantispictureselector.ucrop.task.BitmapLoadTask;
+import com.luck.picture.lib.PictureContentResolver;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -33,9 +33,10 @@ public class BitmapLoadUtils {
     public static void decodeBitmapInBackground(@NonNull Context context,
                                                 @NonNull Uri uri, @Nullable Uri outputUri,
                                                 int requiredWidth, int requiredHeight,
+                                                int imageWidth, int imageHeight,
                                                 BitmapLoadCallback loadCallback) {
 
-        new BitmapLoadTask(context, uri, outputUri, requiredWidth, requiredHeight, loadCallback)
+        new BitmapLoadTask(context, uri, outputUri, requiredWidth, requiredHeight, imageWidth, imageHeight, loadCallback)
                 .executeOnExecutor(Executors.newCachedThreadPool());
     }
 
@@ -51,12 +52,12 @@ public class BitmapLoadUtils {
         return bitmap;
     }
 
-    public static int calculateInSampleSize(@NonNull BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    public static int calculateInSampleSize(@NonNull int width,int height, int reqWidth, int reqHeight) {
         // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
         int inSampleSize = 1;
-
+        if ((width == 0 && height == 0) || (width == reqWidth && height == reqHeight)) {
+            return inSampleSize * 2;
+        }
         if (height > reqHeight || width > reqWidth) {
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width lower or equal to the requested height and width.
@@ -70,12 +71,11 @@ public class BitmapLoadUtils {
     public static int getExifOrientation(@NonNull Context context, @NonNull Uri imageUri) {
         int orientation = ExifInterface.ORIENTATION_UNDEFINED;
         try {
-            InputStream stream = context.getContentResolver().openInputStream(imageUri);
+            InputStream stream = PictureContentResolver.getContentResolverOpenInputStream(context, imageUri);
             if (stream == null) {
                 return orientation;
             }
             orientation = new ImageHeaderParser(stream).getOrientation();
-            close(stream);
         } catch (IOException e) {
             Log.e(TAG, "getExifOrientation: " + imageUri.toString(), e);
         }
@@ -162,7 +162,7 @@ public class BitmapLoadUtils {
 
     @SuppressWarnings("ConstantConditions")
     public static void close(@Nullable Closeable c) {
-        if (c != null && c instanceof Closeable) { // java.lang.IncompatibleClassChangeError: interface not implemented
+        if (c instanceof Closeable) { // java.lang.IncompatibleClassChangeError: interface not implemented
             try {
                 c.close();
             } catch (IOException e) {

@@ -3,6 +3,7 @@ package com.luck.picture.lib.immersive;
 import android.os.Build;
 import android.text.TextUtils;
 import com.luck.picture.lib.tools.StringUtils;
+import com.luck.picture.lib.tools.ValueOf;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +16,8 @@ import java.io.InputStreamReader;
  */
 
 public class RomUtils {
-    public class AvailableRomType {
+
+    public static class AvailableRomType {
         public static final int MIUI = 1;
         public static final int FLYME = 2;
         public static final int ANDROID_NATIVE = 3;
@@ -68,9 +70,7 @@ public class RomUtils {
 
             String version = displayId.substring(0, 1);
 
-            if (version != null) {
-                return StringUtils.stringToInt(version);
-            }
+            return StringUtils.stringToInt(version);
         }
         return 0;
     }
@@ -78,14 +78,15 @@ public class RomUtils {
     //MIUI V6对应的versionCode是4
     //MIUI V7对应的versionCode是5
     private static boolean isMIUIV6OrAbove() {
-        String miuiVersionCodeStr = getSystemProperty("ro.miui.ui.version.code");
+        String miuiVersionCodeStr = getSystemProperty();
         if (!TextUtils.isEmpty(miuiVersionCodeStr)) {
             try {
-                int miuiVersionCode = Integer.parseInt(miuiVersionCodeStr);
+                int miuiVersionCode = ValueOf.toInt(miuiVersionCodeStr);
                 if (miuiVersionCode >= 4) {
                     return true;
                 }
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return false;
@@ -93,13 +94,14 @@ public class RomUtils {
 
 
     public static int getMIUIVersionCode() {
-        String miuiVersionCodeStr = getSystemProperty("ro.miui.ui.version.code");
+        String miuiVersionCodeStr = getSystemProperty();
         int miuiVersionCode = 0;
         if (!TextUtils.isEmpty(miuiVersionCodeStr)) {
             try {
-                miuiVersionCode = Integer.parseInt(miuiVersionCodeStr);
+                miuiVersionCode = ValueOf.toInt(miuiVersionCodeStr);
                 return miuiVersionCode;
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return miuiVersionCode;
@@ -108,18 +110,15 @@ public class RomUtils {
 
     //Android Api 23以上
     private static boolean isAndroid5OrAbove() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return true;
-        }
-        return false;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
 
-    public static String getSystemProperty(String propName) {
+    private static String getSystemProperty() {
         String line;
         BufferedReader input = null;
         try {
-            Process p = Runtime.getRuntime().exec("getprop " + propName);
+            Process p = Runtime.getRuntime().exec("getprop " + "ro.miui.ui.version.code");
             input = new BufferedReader(new InputStreamReader(p.getInputStream()), 1024);
             line = input.readLine();
             input.close();
@@ -130,6 +129,7 @@ public class RomUtils {
                 try {
                     input.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }

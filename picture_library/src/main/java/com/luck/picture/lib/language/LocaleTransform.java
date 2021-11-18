@@ -34,6 +34,12 @@ public class LocaleTransform {
             case LanguageConfig.SPANISH:
                 // 西班牙语
                 return new Locale("es", "ES");
+            case LanguageConfig.PORTUGAL:
+                // 葡萄牙语
+                return new Locale("pt", "PT");
+            case LanguageConfig.AR:
+                // 阿拉伯语
+                return new Locale("ar", "AE");
             default:
                 // 简体中文
                 return Locale.CHINESE;
